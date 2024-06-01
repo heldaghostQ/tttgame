@@ -1,0 +1,99 @@
+#include <iostream>
+#include <cctype>
+using namespace std;
+
+// Функция для отображения поля
+void displayBoard(char board[]) {
+    cout << " " << board[0] << " | " << board[1] << " | " << board[2] << endl;
+    cout << "-----------" << endl;
+    cout << " " << board[3] << " | " << board[4] << " | " << board[5] << endl;
+    cout << "-----------" << endl;
+    cout << " " << board[6] << " | " << board[7] << " | " << board[8] << endl;
+}
+
+// Функция для проверки победителя
+bool checkWinner(char board[], char symbol) {
+    // Проверка горизонтальных, вертикальных и диагональных линий на наличие победителя
+    return ((board[0] == symbol && board[1] == symbol && board[2] == symbol) ||
+        (board[3] == symbol && board[4] == symbol && board[5] == symbol) ||
+        (board[6] == symbol && board[7] == symbol && board[8] == symbol) ||
+        (board[0] == symbol && board[3] == symbol && board[6] == symbol) ||
+        (board[1] == symbol && board[4] == symbol && board[7] == symbol) ||
+        (board[2] == symbol && board[5] == symbol && board[8] == symbol) ||
+        (board[0] == symbol && board[4] == symbol && board[8] == symbol) ||
+        (board[2] == symbol && board[4] == symbol && board[6] == symbol));
+}
+
+int main() {
+    string player1, player2;
+
+    bool playAgain = true;
+    while (playAgain) {
+        char board[9] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+        cout << "Enter the name of Player 1: ";
+        cin >> player1;
+        cout << "Enter the name of Player 2: ";
+        cin >> player2;
+
+        int turn = 0;
+        bool win = false;
+
+        while (!win) {
+            // Отображение поля
+            displayBoard(board);
+
+            int choice;
+            if (turn % 2 == 0) {
+                cout << player1 << ", enter a number: ";
+                while (!(cin >> choice) || choice < 1 || choice > 9 || !isdigit(board[choice - 1])) {
+                    cout << "Invalid input. Please enter a number between 1 and 9: ";
+                    cin.clear();  // сброс флага ошибки
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');  // очистка буфера ввода
+                }
+                choice--;  // Adjust for 0-based index
+                board[choice] = 'X';
+                turn++;
+            }
+            else {
+                cout << player2 << ", enter a number: ";
+                while (!(cin >> choice) || choice < 1 || choice > 9 || !isdigit(board[choice - 1])) {
+                    cout << "Invalid input. Please enter a number between 1 and 9: ";
+                    cin.clear();  // сброс флага ошибки
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');  // очистка буфера ввода
+                }
+                choice--;  // Adjust for 0-based index
+                board[choice] = 'O';
+                turn++;
+            }
+
+            // Проверка победителя
+            if (turn >= 5) {
+                if (checkWinner(board, 'X')) {
+                    displayBoard(board);
+                    cout << "=== " << player1 << " wins! ===" << endl;
+                    win = true;
+                }
+                else if (checkWinner(board, 'O')) {
+                    displayBoard(board);
+                    cout << "=== " << player2 << " wins! ===" << endl;
+                    win = true;
+                }
+                else if (turn == 9) {
+                    displayBoard(board);
+                    cout << "=== It's a draw! ===" << endl;
+                    win = true;
+                }
+            }
+        }
+
+        // Запрос на повторную игру
+        char choice;
+        cout << "Do you want to play again? (Y/N): ";
+        cin >> choice;
+        if (choice != 'Y' && choice != 'y') {
+            playAgain = false;
+        }
+    }
+    return 0;
+}
